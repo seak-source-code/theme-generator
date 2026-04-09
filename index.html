@@ -7,7 +7,7 @@
 
 <style>
 :root {
-  --bg: #000000;
+  --bg: #000;
   --panel: #0d1117;
   --border: #21262d;
   --card: #161b22;
@@ -83,25 +83,31 @@ button {
 }
 
 .phone {
-  width: 360px;
-  height: 720px;
+  width: 320px;
+  height: 680px;
   background: #000;
-  border-radius: 30px;
-  padding: 15px;
-  box-shadow: 0 0 0 6px #000;
+  border-radius: 32px;
+  padding: 14px;
+  box-shadow: 0 0 0 6px #000, 0 15px 40px rgba(0,0,0,0.7);
+  position: relative;
+}
+
+.notch {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 18px;
+  background: #111;
+  border-radius: 20px;
 }
 
 .preview {
   width: 100%;
+  height: 100%;
   overflow-y: auto;
-}
-
-/* BALANCE */
-.balance-bg {
-  background: var(--card);
-  border-radius: 12px;
-  padding: 10px;
-  margin-bottom: 10px;
+  padding-top: 25px;
 }
 
 /* ACCOUNT */
@@ -240,9 +246,9 @@ button {
 <!-- PREVIEW -->
 <div class="preview-wrapper">
 <div class="phone">
-<div class="preview">
+<div class="notch"></div>
 
-<div class="balance-bg" id="balanceBg"></div>
+<div class="preview">
 
 <div class="account-card" id="accountCard"></div>
 
@@ -312,11 +318,6 @@ function generate(){
     mainMenu:{},
     extraMenu:{}
   };
-
-  document.getElementById("balanceBg").innerHTML =
-    `<div class="icon-name" onclick="copyText('${data.balanceBgImage}', this)">
-      ${data.balanceBgImage}
-    </div>`;
 
   const acc = icon("acc");
   document.getElementById("accountCard").innerHTML =
