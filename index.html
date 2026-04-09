@@ -3,104 +3,133 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Theme JSON Generator</title>
+<title>Theme JSON Generator • Dev Tool</title>
 
-<!-- Highlight.js (code style) -->
+<!-- Highlight.js -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
 <style>
   body {
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #0f172a;
-    color: #fff;
     margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #0d1117;
+    color: #c9d1d9;
+  }
+
+  header {
+    padding: 12px 20px;
+    background: #161b22;
+    border-bottom: 1px solid #30363d;
+    font-weight: bold;
+  }
+
+  .layout {
+    display: flex;
+    height: calc(100vh - 50px);
+  }
+
+  .left {
+    width: 320px;
     padding: 20px;
+    border-right: 1px solid #30363d;
+    background: #0d1117;
   }
 
-  .container {
-    max-width: 900px;
-    margin: auto;
-  }
-
-  h1 {
-    text-align: center;
-  }
-
-  .card {
-    background: #1e293b;
+  .right {
+    flex: 1;
     padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
+    overflow: auto;
+  }
+
+  label {
+    font-size: 12px;
+    opacity: 0.7;
   }
 
   input, select {
     width: 100%;
     padding: 10px;
-    margin-top: 6px;
-    margin-bottom: 12px;
-    border-radius: 8px;
-    border: none;
-    background: #334155;
+    margin: 6px 0 12px;
+    border-radius: 6px;
+    border: 1px solid #30363d;
+    background: #161b22;
     color: white;
   }
 
-  .row {
+  .buttons {
     display: flex;
-    gap: 10px;
+    gap: 8px;
   }
 
   button {
     flex: 1;
-    padding: 12px;
+    padding: 10px;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
-    font-weight: bold;
+    font-size: 12px;
   }
 
-  .generate { background: #22c55e; }
-  .copy { background: #3b82f6; }
-  .download { background: #f59e0b; }
+  .copy { background: #238636; color: white; }
+  .download { background: #1f6feb; color: white; }
 
   pre {
+    margin: 0;
     border-radius: 10px;
-    padding: 15px;
-    overflow-x: auto;
+    padding: 20px;
+    background: #0d1117;
+    font-size: 13px;
+  }
+
+  .tag {
+    font-size: 11px;
+    background: #30363d;
+    padding: 4px 8px;
+    border-radius: 6px;
+    display: inline-block;
+    margin-bottom: 10px;
   }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-  <h1>🎨 Theme JSON Generator</h1>
+<header>🧑‍💻 Theme JSON Generator • Developer Tool</header>
 
-  <div class="card">
+<div class="layout">
+
+  <!-- LEFT PANEL -->
+  <div class="left">
+
+    <label>Theme Key</label>
     <input id="themeKey" value="KID-HAMSTER" />
 
-    <div class="row">
-      <select id="country">
-        <option value="kh">KH</option>
-        <option value="la">LA</option>
-      </select>
+    <label>Country</label>
+    <select id="country">
+      <option value="kh">KH</option>
+      <option value="la">LA</option>
+    </select>
 
-      <select id="mode">
-        <option value="da">Dark</option>
-        <option value="li">Light</option>
-      </select>
-    </div>
+    <label>Mode</label>
+    <select id="mode">
+      <option value="da">Dark</option>
+      <option value="li">Light</option>
+    </select>
 
-    <div class="row">
-      <button class="generate" onclick="generate()">Generate</button>
+    <div class="buttons">
       <button class="copy" onclick="copyJSON()">Copy</button>
       <button class="download" onclick="download()">Download</button>
     </div>
+
   </div>
 
-  <div class="card">
+  <!-- RIGHT PANEL -->
+  <div class="right">
+    <div class="tag">preview.json</div>
     <pre><code id="code" class="json"></code></pre>
   </div>
+
 </div>
 
 <script>
@@ -160,12 +189,16 @@ function generate() {
   hljs.highlightElement(codeBlock);
 }
 
-// Auto run
+// Live update (no button needed)
+["themeKey", "country", "mode"].forEach(id => {
+  document.getElementById(id).addEventListener("input", generate);
+});
+
+// Init
 generate();
 
 function copyJSON() {
   navigator.clipboard.writeText(currentJSON);
-  alert("Copied!");
 }
 
 function download() {
