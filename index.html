@@ -3,131 +3,232 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Theme JSON Generator • Dev Tool</title>
-
-<!-- Highlight.js -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<title>Theme Dev Tool</title>
 
 <style>
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #0d1117;
-    color: #c9d1d9;
-  }
+body {
+  margin: 0;
+  font-family: -apple-system, sans-serif;
+  background: #0d1117;
+  color: white;
+}
 
-  header {
-    padding: 12px 20px;
-    background: #161b22;
-    border-bottom: 1px solid #30363d;
-    font-weight: bold;
-  }
+.container {
+  display: flex;
+  height: 100vh;
+}
 
-  .layout {
-    display: flex;
-    height: calc(100vh - 50px);
-  }
+.left {
+  width: 280px;
+  padding: 20px;
+  border-right: 1px solid #333;
+}
 
-  .left {
-    width: 320px;
-    padding: 20px;
-    border-right: 1px solid #30363d;
-    background: #0d1117;
-  }
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  background: #161b22;
+  border: 1px solid #333;
+  color: white;
+  border-radius: 6px;
+}
 
-  .right {
-    flex: 1;
-    padding: 20px;
-    overflow: auto;
-  }
+.buttons {
+  display: flex;
+  gap: 8px;
+}
 
-  label {
-    font-size: 12px;
-    opacity: 0.7;
-  }
+button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
 
-  input, select {
-    width: 100%;
-    padding: 10px;
-    margin: 6px 0 12px;
-    border-radius: 6px;
-    border: 1px solid #30363d;
-    background: #161b22;
-    color: white;
-  }
+.copy { background: #238636; }
+.download { background: #1f6feb; }
 
-  .buttons {
-    display: flex;
-    gap: 8px;
-  }
+.right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
 
-  button {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 12px;
-  }
+/* MOBILE */
+.preview-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #020617;
+}
 
-  .copy { background: #238636; color: white; }
-  .download { background: #1f6feb; color: white; }
+.phone {
+  width: 360px;
+  height: 720px;
+  background: #102a43;
+  border-radius: 30px;
+  padding: 15px;
+  box-shadow: 0 0 0 6px #111;
+  display: flex;
+}
 
-  pre {
-    margin: 0;
-    border-radius: 10px;
-    padding: 20px;
-    background: #0d1117;
-    font-size: 13px;
-  }
+.preview {
+  width: 100%;
+  overflow-y: auto;
+}
 
-  .tag {
-    font-size: 11px;
-    background: #30363d;
-    padding: 4px 8px;
-    border-radius: 6px;
-    display: inline-block;
-    margin-bottom: 10px;
-  }
+.account-card {
+  background: #173a5e;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #1f4e79;
+}
+
+.row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.item {
+  background: #1f4e79;
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+}
+
+.item img {
+  width: 32px;
+}
+
+.menu-name {
+  font-size: 12px;
+}
+
+.icon-name {
+  font-size: 9px;
+  opacity: 0.6;
+  word-break: break-all;
+  cursor: pointer;
+}
+
+.extra-container {
+  margin-top: 15px;
+  background: #173a5e;
+  padding: 12px;
+  border-radius: 14px;
+}
+
+.extra-row {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+.extra-item {
+  min-width: 80px;
+  background: #1f4e79;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+}
+
+pre {
+  margin: 0;
+  padding: 15px;
+  background: #020617;
+  color: #38bdf8;
+  height: 260px;
+  overflow: auto;
+}
 </style>
 </head>
 
 <body>
 
-<header>🧑‍💻 Theme JSON Generator • Developer Tool</header>
+<div class="container">
 
-<div class="layout">
-
-  <!-- LEFT PANEL -->
+  <!-- LEFT -->
   <div class="left">
+    <h3>Theme Config</h3>
 
-    <label>Theme Key</label>
-    <input id="themeKey" value="KID-HAMSTER" />
+    <input id="themeKey" value="KID-HAMSTER"/>
 
-    <label>Country</label>
     <select id="country">
       <option value="kh">KH</option>
       <option value="la">LA</option>
     </select>
 
-    <label>Mode</label>
     <select id="mode">
       <option value="da">Dark</option>
       <option value="li">Light</option>
     </select>
 
     <div class="buttons">
-      <button class="copy" onclick="copyJSON()">Copy</button>
+      <button class="copy" onclick="copyJSON()">Copy JSON</button>
       <button class="download" onclick="download()">Download</button>
     </div>
-
   </div>
 
-  <!-- RIGHT PANEL -->
+  <!-- RIGHT -->
   <div class="right">
-    <div class="tag">preview.json</div>
-    <pre><code id="code" class="json"></code></pre>
+
+    <div class="preview-wrapper">
+      <div class="phone">
+
+        <div class="preview">
+
+          <div class="account-card" id="accountCard"></div>
+
+          <div class="row-2">
+            <div class="item" id="payment"></div>
+            <div class="item" id="topup"></div>
+          </div>
+
+          <div class="grid-3">
+            <div class="item" id="card"></div>
+            <div class="item" id="scanqr"></div>
+            <div class="item" id="transfer"></div>
+          </div>
+
+          <div class="grid-3">
+            <div class="item" id="deposit"></div>
+            <div class="item" id="loan"></div>
+            <div class="item" id="quickcash"></div>
+          </div>
+
+          <div class="extra-container">
+            <div class="extra-row" id="extraRow"></div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <pre id="json"></pre>
+
   </div>
 
 </div>
@@ -135,15 +236,39 @@
 <script>
 let currentJSON = "";
 
+const labels = {
+  acc: "Accounts",
+  payment: "Payments",
+  topup: "Mobile Top-up",
+  card: "Cards",
+  scanqr: "Scan QR",
+  transfer: "Transfers",
+  deposit: "Deposits",
+  loan: "Loans",
+  quickcash: "Quick Cash",
+  exgrate: "Exchange",
+  publicservice: "Public Service",
+  csx: "CSX",
+  promotion: "Promotion",
+  location: "Location",
+  invitefri: "Invite",
+  security: "Security",
+  payme: "PayMe",
+  acsmry: "Summary",
+  trade: "Trade",
+  acpay: "AC Pay",
+  merchant: "Merchant"
+};
+
 function generate() {
-  const themeKey = document.getElementById("themeKey").value.trim();
+  const themeKey = document.getElementById("themeKey").value;
   const country = document.getElementById("country").value;
   const mode = document.getElementById("mode").value;
 
   const theme = themeKey.toLowerCase();
   const prefix = country === "kh" ? "abc" : "abl";
 
-  const menu = (name) => `ic-${name}-${theme}-${country}-${mode}.png`;
+  const icon = (name) => `ic-${name}-${theme}-${country}-${mode}.png`;
 
   const data = {
     themeKey,
@@ -153,48 +278,67 @@ function generate() {
     eventBalaneImageInside: `evbl-${theme}-${country}-${mode}.png`,
     appearanceImage: `appear-${theme}-${country}-${mode}.png`,
     qrScanImageButton: `qr-${theme}-${country}-${mode}.png`,
-    mainMenu: {
-      account: menu("acc"),
-      payment: menu("payment"),
-      topup: menu("topup"),
-      card: menu("card"),
-      scanqr: menu("scanqr"),
-      transfer: menu("transfer"),
-      deposit: menu("deposit"),
-      loan: menu("loan"),
-      faqs: menu("faqs"),
-      quickcash: menu("quickcash")
-    },
-    extraMenu: {
-      exgrate: menu("exgrate"),
-      publicservice: menu("publicservice"),
-      csx: menu("csx"),
-      promotion: menu("promotion"),
-      location: menu("location"),
-      invitefri: menu("invitefri"),
-      security: menu("security"),
-      payme: menu("payme"),
-      acsmry: menu("acsmry"),
-      trade: menu("trade"),
-      acpay: menu("acpay"),
-      merchant: menu("merchant")
-    }
+    mainMenu: {},
+    extraMenu: {}
   };
 
+  // Account
+  const accIcon = icon("acc");
+  document.getElementById("accountCard").innerHTML = `
+    <div class="circle"></div>
+    <div>
+      <h3>Accounts</h3>
+      <div class="icon-name" onclick="copyText('${accIcon}', this)">
+        ${accIcon}
+      </div>
+    </div>
+  `;
+
+  const mainKeys = ["payment","topup","card","scanqr","transfer","deposit","loan","quickcash"];
+
+  mainKeys.forEach(k=>{
+    const file = icon(k);
+    data.mainMenu[k] = file;
+
+    document.getElementById(k).innerHTML = `
+      <img src="${file}" onerror="this.style.display='none'"/>
+      <div class="menu-name">${labels[k]}</div>
+      <div class="icon-name" onclick="copyText('${file}', this)">${file}</div>
+    `;
+  });
+
+  const extraRow = document.getElementById("extraRow");
+  extraRow.innerHTML = "";
+
+  Object.keys(labels).slice(9).forEach(k=>{
+    const file = icon(k);
+    data.extraMenu[k] = file;
+
+    const el = document.createElement("div");
+    el.className = "extra-item";
+    el.innerHTML = `
+      <img src="${file}" onerror="this.style.display='none'"/>
+      <div class="menu-name">${labels[k]}</div>
+      <div class="icon-name" onclick="copyText('${file}', this)">${file}</div>
+    `;
+    extraRow.appendChild(el);
+  });
+
   currentJSON = JSON.stringify(data, null, 2);
-
-  const codeBlock = document.getElementById("code");
-  codeBlock.textContent = currentJSON;
-
-  hljs.highlightElement(codeBlock);
+  document.getElementById("json").textContent = currentJSON;
 }
 
-// Live update (no button needed)
-["themeKey", "country", "mode"].forEach(id => {
+function copyText(text, el) {
+  navigator.clipboard.writeText(text);
+  const old = el.innerText;
+  el.innerText = "✅ Copied";
+  setTimeout(()=>el.innerText=old,1000);
+}
+
+["themeKey","country","mode"].forEach(id=>{
   document.getElementById(id).addEventListener("input", generate);
 });
 
-// Init
 generate();
 
 function copyJSON() {
