@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Theme JSON Generator</title>
 
+<!-- Highlight.js (code style) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
 <style>
   body {
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
@@ -21,7 +25,6 @@
 
   h1 {
     text-align: center;
-    margin-bottom: 20px;
   }
 
   .card {
@@ -31,11 +34,6 @@
     margin-bottom: 20px;
   }
 
-  label {
-    font-size: 14px;
-    opacity: 0.8;
-  }
-
   input, select {
     width: 100%;
     padding: 10px;
@@ -43,7 +41,6 @@
     margin-bottom: 12px;
     border-radius: 8px;
     border: none;
-    outline: none;
     background: #334155;
     color: white;
   }
@@ -66,15 +63,10 @@
   .copy { background: #3b82f6; }
   .download { background: #f59e0b; }
 
-  textarea {
-    width: 100%;
-    height: 350px;
+  pre {
     border-radius: 10px;
     padding: 15px;
-    font-family: monospace;
-    background: #020617;
-    color: #38bdf8;
-    border: none;
+    overflow-x: auto;
   }
 </style>
 </head>
@@ -85,25 +77,18 @@
   <h1>🎨 Theme JSON Generator</h1>
 
   <div class="card">
-    <label>Theme Key</label>
     <input id="themeKey" value="KID-HAMSTER" />
 
     <div class="row">
-      <div style="flex:1;">
-        <label>Country</label>
-        <select id="country">
-          <option value="kh">KH</option>
-          <option value="la">LA</option>
-        </select>
-      </div>
+      <select id="country">
+        <option value="kh">KH</option>
+        <option value="la">LA</option>
+      </select>
 
-      <div style="flex:1;">
-        <label>Mode</label>
-        <select id="mode">
-          <option value="da">Dark</option>
-          <option value="li">Light</option>
-        </select>
-      </div>
+      <select id="mode">
+        <option value="da">Dark</option>
+        <option value="li">Light</option>
+      </select>
     </div>
 
     <div class="row">
@@ -114,17 +99,17 @@
   </div>
 
   <div class="card">
-    <textarea id="output"></textarea>
+    <pre><code id="code" class="json"></code></pre>
   </div>
 </div>
 
 <script>
+let currentJSON = "";
+
 function generate() {
   const themeKey = document.getElementById("themeKey").value.trim();
   const country = document.getElementById("country").value;
   const mode = document.getElementById("mode").value;
-
-  if (!themeKey) return;
 
   const theme = themeKey.toLowerCase();
   const prefix = country === "kh" ? "abc" : "abl";
@@ -167,23 +152,24 @@ function generate() {
     }
   };
 
-  document.getElementById("output").value =
-    JSON.stringify(data, null, 2);
+  currentJSON = JSON.stringify(data, null, 2);
+
+  const codeBlock = document.getElementById("code");
+  codeBlock.textContent = currentJSON;
+
+  hljs.highlightElement(codeBlock);
 }
 
-// Auto-generate on load
+// Auto run
 generate();
 
 function copyJSON() {
-  const text = document.getElementById("output").value;
-  navigator.clipboard.writeText(text);
+  navigator.clipboard.writeText(currentJSON);
   alert("Copied!");
 }
 
 function download() {
-  const content = document.getElementById("output").value;
-
-  const blob = new Blob([content], { type: "application/json" });
+  const blob = new Blob([currentJSON], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = "theme.json";
