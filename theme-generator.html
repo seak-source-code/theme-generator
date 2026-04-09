@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.1">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1">&lt;meta charset="UTF-8" /&gt;</p>
+<p class="p1">&lt;title&gt;Theme JSON Generator&lt;/title&gt;</p>
+<p class="p1">&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>body {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>font-family: Arial;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>padding: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>background: #f5f5f5;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>input, select, button {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>padding: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>margin: 5px 0;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>width: 200px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>textarea {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>height: 300px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>margin-top: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>font-family: monospace;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>.container {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>max-width: 600px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>margin: auto;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>background: white;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>padding: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>border-radius: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1">&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div class="container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;h2&gt;🎨 Theme JSON Generator&lt;/h2&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;label&gt;Theme Key&lt;/label&gt;&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;input id="themeKey" placeholder="KID-HAMSTER" /&gt;&lt;br&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;label&gt;Country&lt;/label&gt;&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;select id="country"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;option value="kh"&gt;KH&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;option value="la"&gt;LA&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/select&gt;&lt;br&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;label&gt;Mode&lt;/label&gt;&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;select id="mode"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;option value="da"&gt;Dark&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;option value="li"&gt;Light&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/select&gt;&lt;br&gt;&lt;br&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;button onclick="generate()"&gt;Generate&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;button onclick="download()"&gt;Download JSON&lt;/button&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;textarea id="output" placeholder="JSON output..."&gt;&lt;/textarea&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1">function generate() {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const themeKey = document.getElementById("themeKey").value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const country = document.getElementById("country").value;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const mode = document.getElementById("mode").value;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (!themeKey) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>alert("Please enter themeKey");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const theme = themeKey.toLowerCase();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const prefix = country === "kh" ? "abc" : "abl";</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const menu = (name) =&gt; `ic-${name}-${theme}-${country}-${mode}.png`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const data = {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>themeKey: themeKey,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>thumbnail: `${prefix}-${theme}.png`,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>backgroundImage: `bg-${theme}-${country}-${mode}.png`,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>balanceBgImage: `bgbl-${theme}-${country}-${mode}.png`,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>eventBalaneImageInside: `evbl-${theme}-${country}-${mode}.png`,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>appearanceImage: `appear-${theme}-${country}-${mode}.png`,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>qrScanImageButton: `qr-${theme}-${country}-${mode}.png`,</p>
+<p class="p1"><span class="Apple-converted-space">    </span>mainMenu: {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>account: menu("acc"),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>payment: menu("payment"),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>topup: menu("topup"),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>card: menu("card"),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>scanqr: menu("scanqr"),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>transfer: menu("transfer"),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>deposit: menu("deposit"),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>loan: menu("loan"),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>faqs: menu("faqs"),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>quickcash: menu("quickcash")</p>
+<p class="p1"><span class="Apple-converted-space">    </span>},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>extraMenu: {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>exgrate: menu("exgrate"),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>publicservice: menu("publicservice"),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>csx: menu("csx"),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>promotion: menu("promotion"),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>location: menu("location"),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>invitefri: menu("invitefri"),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>security: menu("security"),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>payme: menu("payme"),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>acsmry: menu("acsmry"),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>trade: menu("trade"),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>acpay: menu("acpay"),</p>
+<p class="p1"><span class="Apple-converted-space">      </span>merchant: menu("merchant")</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById("output").value =</p>
+<p class="p1"><span class="Apple-converted-space">    </span>JSON.stringify(data, null, 2);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function download() {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const content = document.getElementById("output").value;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (!content) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>alert("Generate JSON first");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const blob = new Blob([content], { type: "application/json" });</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const a = document.createElement("a");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>a.href = URL.createObjectURL(blob);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>a.download = "theme.json";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>a.click();</p>
+<p class="p1">}</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
