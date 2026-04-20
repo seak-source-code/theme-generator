@@ -5,140 +5,66 @@
 <title>Theme DevKit</title>
 
 <style>
-body {
-  margin:0;
-  font-family:-apple-system;
-  background:#000;
-  color:#e6edf3;
-}
-
-.container {
-  display:flex;
-  height:100vh;
-}
-
-.col {
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  border-right:1px solid #21262d;
-}
-
+body { margin:0; font-family:-apple-system; background:#000; color:#e6edf3; }
+.container { display:flex; height:100vh; }
+.col { flex:1; display:flex; flex-direction:column; border-right:1px solid #21262d; }
 .col:last-child { border-right:none; }
+.header { padding:12px; font-weight:600; border-bottom:1px solid #21262d; background:#0d1117; }
+.content { padding:12px; flex:1; overflow:auto; display:flex; flex-direction:column; align-items:center; }
 
-.header {
-  padding:12px;
-  font-weight:600;
-  border-bottom:1px solid #21262d;
-  background:#0d1117;
-}
-
-.content {
-  padding:12px;
-  overflow:auto;
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-}
-
-/* FORM */
-.form-group {
-  width:100%;
-  max-width:320px;
-  margin-bottom:10px;
-}
-
-label {
-  font-size:12px;
-  color:#7d8590;
-  margin-bottom:4px;
-  display:block;
-}
+.form-group { width:100%; max-width:320px; margin-bottom:10px; }
+label { font-size:12px; color:#7d8590; margin-bottom:4px; display:block; }
 
 input, select {
-  width:100%;
-  padding:10px;
-  background:#000;
-  border:1px solid #21262d;
-  color:#fff;
-  border-radius:6px;
-  box-sizing:border-box;
+  width:100%; padding:10px; background:#000;
+  border:1px solid #21262d; color:#fff; border-radius:6px;
 }
 
 button {
-  width:100%;
-  max-width:320px;
-  padding:10px;
-  margin-top:12px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  background:#58a6ff;
+  width:100%; max-width:320px; padding:10px;
+  margin-top:12px; border:none; border-radius:6px;
+  background:#58a6ff; cursor:pointer;
 }
 
-/* JSON */
-pre {
-  margin:0;
-  font-family:monospace;
-  color:#79c0ff;
-}
+pre { margin:0; font-family:monospace; color:#79c0ff; }
 
 /* SEARCH */
-.result-item {
-  width:100%;
-  max-width:320px;
-  padding:8px;
-  border-bottom:1px solid #21262d;
-}
-
+.result-item { width:100%; max-width:320px; padding:8px; border-bottom:1px solid #21262d; }
 .key { color:#ffa657; cursor:pointer; }
 .value { color:#79c0ff; cursor:pointer; }
 
 /* DROPDOWN */
 .dropdown {
-  width:100%;
-  max-width:320px;
+  width:100%; max-width:320px;
   border:1px solid #21262d;
-  max-height:150px;
-  overflow:auto;
+  max-height:150px; overflow:auto;
   background:#0d1117;
 }
 
-.dropdown-item {
-  padding:8px;
-  cursor:pointer;
-  font-size:12px;
-}
-
-.dropdown-item:hover {
-  background:#161b22;
-}
+.dropdown-item { padding:8px; cursor:pointer; font-size:12px; }
+.dropdown-item:hover { background:#161b22; }
 
 /* DROP ZONE */
 #dropZone {
-  width:100%;
-  max-width:320px;
+  width:100%; max-width:320px;
   border:2px dashed #30363d;
-  padding:20px;
-  text-align:center;
-  border-radius:8px;
-  cursor:pointer;
+  padding:20px; text-align:center;
+  border-radius:8px; cursor:pointer;
 }
 
 /* PREVIEW */
-#preview {
-  max-width:320px;
-  margin-top:10px;
-  display:none;
-}
+#preview { max-width:320px; margin-top:10px; display:none; }
 
 /* OUTPUT */
 #fileNamePreview {
   max-width:320px;
-  word-break:break-all;
   color:#79c0ff;
+  word-break:break-all;
 }
+
+/* ERROR */
+.error { border-color:#ff4d4f !important; }
+.error-text { color:#ff4d4f; font-size:12px; margin-top:4px; }
 </style>
 </head>
 
@@ -204,6 +130,9 @@ pre {
     <div class="form-group">
       <label>Search Key</label>
       <input id="assetKeyInput" placeholder="type key..." />
+      <div id="keyError" class="error-text" style="display:none;">
+        Please select a key
+      </div>
     </div>
 
     <div id="keySuggestions" class="dropdown"></div>
@@ -214,11 +143,10 @@ pre {
     </div>
 
     <input type="file" id="fileInput" hidden />
-
     <img id="preview"/>
 
     <div style="font-size:12px;margin-top:10px;">Output name:</div>
-    <div id="fileNamePreview"></div>
+    <div id="fileNamePreview">Upload file to start</div>
 
     <button onclick="downloadFile()">Download</button>
 
@@ -264,42 +192,44 @@ function flatten(o,p=''){
 /* SEARCH */
 search.oninput=()=>{
   result.innerHTML="";
-  Object.entries(flat)
-    .filter(([k])=>k.includes(search.value))
-    .forEach(([k,v])=>{
-      const d=document.createElement("div");
-      d.className="result-item";
-      d.innerHTML=`<div class="key">${k}</div><div class="value">${v}</div>`;
-      d.onclick=()=>copy(v);
-      d.querySelector(".key").onclick=e=>{e.stopPropagation();copy(k)};
-      result.appendChild(d);
-    });
+  Object.entries(flat).filter(([k])=>k.includes(search.value)).forEach(([k,v])=>{
+    const d=document.createElement("div");
+    d.className="result-item";
+    d.innerHTML=`<div class="key">${k}</div><div class="value">${v}</div>`;
+    d.onclick=()=>copy(v);
+    d.querySelector(".key").onclick=e=>{e.stopPropagation();copy(k)};
+    result.appendChild(d);
+  });
 };
 
-/* ASSET SEARCH */
+/* ERROR */
+function showKeyError(msg="Please select a key"){
+  assetKeyInput.classList.add("error");
+  keyError.innerText=msg;
+  keyError.style.display="block";
+}
+
+function clearKeyError(){
+  assetKeyInput.classList.remove("error");
+  keyError.style.display="none";
+}
+
+/* KEY SEARCH */
 assetKeyInput.oninput=()=>{
   keySuggestions.innerHTML="";
-  Object.keys(flat)
-    .filter(k=>k.includes(assetKeyInput.value))
-    .forEach(k=>{
-      const d=document.createElement("div");
-      d.className="dropdown-item";
-      d.innerText=k;
-      d.onclick=()=>{
-        selectedKeyPath=k;
-        assetKeyInput.value=k;
-        keySuggestions.innerHTML="";
-        updateFileName();
-      };
-      keySuggestions.appendChild(d);
-    });
-};
-
-assetKeyInput.onkeydown=e=>{
-  if(e.key==="Enter"){
-    const k=Object.keys(flat).find(k=>k.includes(assetKeyInput.value));
-    if(k){selectedKeyPath=k;assetKeyInput.value=k;keySuggestions.innerHTML="";updateFileName();}
-  }
+  Object.keys(flat).filter(k=>k.includes(assetKeyInput.value)).forEach(k=>{
+    const d=document.createElement("div");
+    d.className="dropdown-item";
+    d.innerText=k;
+    d.onclick=()=>{
+      selectedKeyPath=k;
+      assetKeyInput.value=k;
+      keySuggestions.innerHTML="";
+      clearKeyError();
+      updateFileName();
+    };
+    keySuggestions.appendChild(d);
+  });
 };
 
 /* FILE */
@@ -307,9 +237,15 @@ dropZone.onclick=()=>fileInput.click();
 
 function handleFile(f){
   uploadedFile=f;
+  clearKeyError();
+
   const r=new FileReader();
-  r.onload=e=>{preview.src=e.target.result;preview.style.display="block"};
+  r.onload=e=>{
+    preview.src=e.target.result;
+    preview.style.display="block";
+  };
   r.readAsDataURL(f);
+
   updateFileName();
 }
 
@@ -317,9 +253,18 @@ fileInput.onchange=e=>handleFile(e.target.files[0]);
 dropZone.ondrop=e=>{e.preventDefault();handleFile(e.dataTransfer.files[0])};
 dropZone.ondragover=e=>e.preventDefault();
 
-/* FILENAME */
+/* NAME */
 function updateFileName(){
-  if(!uploadedFile||!selectedKeyPath)return;
+  if(!uploadedFile){
+    fileNamePreview.innerText="Upload file to start";
+    return;
+  }
+
+  if(!selectedKeyPath){
+    fileNamePreview.innerText="⚠️ Select key to generate name";
+    return;
+  }
+
   const key=selectedKeyPath.split(".").pop();
   const t=themeKey.value.toLowerCase(),c=country.value,m=mode.value;
 
@@ -340,8 +285,20 @@ function updateFileName(){
   fileNamePreview.innerText=name;
 }
 
+/* DOWNLOAD */
 function downloadFile(){
-  if(!uploadedFile)return alert("upload first");
+  if(!uploadedFile){
+    showKeyError("Please upload image first");
+    return;
+  }
+
+  if(!selectedKeyPath){
+    showKeyError("Please select key before download");
+    return;
+  }
+
+  clearKeyError();
+
   const a=document.createElement("a");
   a.href=URL.createObjectURL(uploadedFile);
   a.download=fileNamePreview.innerText;
