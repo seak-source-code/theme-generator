@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Theme Dev Tool</title>
+<title>Theme DevKit</title>
 
 <style>
 body {
@@ -39,7 +39,6 @@ body {
   flex:1;
 }
 
-/* INPUT */
 label {
   font-size:12px;
   color:#7d8590;
@@ -99,8 +98,16 @@ pre {
   cursor:pointer;
 }
 
-.key:hover { color:#ffb86c; }
-.value:hover { color:#58a6ff; }
+/* DROP ZONE */
+#dropZone {
+  border:2px dashed #30363d;
+  border-radius:10px;
+  padding:20px;
+  text-align:center;
+  color:#7d8590;
+  margin-top:6px;
+  cursor:pointer;
+}
 </style>
 </head>
 
@@ -108,9 +115,9 @@ pre {
 
 <div class="container">
 
-<!-- LEFT -->
+<!-- GENERATOR -->
 <div class="col">
-  <div class="header">Generate Theme</div>
+  <div class="header">Theme Generator</div>
   <div class="content">
 
     <label>Theme Key</label>
@@ -133,7 +140,7 @@ pre {
   </div>
 </div>
 
-<!-- MIDDLE -->
+<!-- JSON -->
 <div class="col">
   <div class="header">JSON Preview</div>
   <div class="content">
@@ -141,7 +148,7 @@ pre {
   </div>
 </div>
 
-<!-- RIGHT -->
+<!-- SEARCH -->
 <div class="col">
   <div class="header">Search Key</div>
   <div class="content">
@@ -152,11 +159,38 @@ pre {
   </div>
 </div>
 
+<!-- ASSET TOOL -->
+<div class="col">
+  <div class="header">Image Rename Tool</div>
+  <div class="content">
+
+    <label>Select Key</label>
+    <select id="assetKey"></select>
+
+    <label>Upload Image</label>
+
+    <div id="dropZone">
+      Drag & Drop Image Here<br/>or Click to Upload
+    </div>
+
+    <input type="file" id="fileInput" accept="image/*" style="display:none"/>
+
+    <img id="preview" style="max-width:100%; margin-top:10px; display:none; border-radius:6px;" />
+
+    <div style="margin-top:10px; font-size:12px; color:#7d8590;">
+      Output name:
+    </div>
+    <div id="fileNamePreview" style="color:#79c0ff;"></div>
+
+    <button onclick="downloadFile()">Download Renamed</button>
+
+  </div>
+</div>
+
 </div>
 
 <script>
-let data = {};
-let flat = {};
+let data = {}, flat = {}, uploadedFile = null;
 
 /* GENERATE */
 function generate(){
@@ -205,6 +239,8 @@ function generate(){
 
   flat = flatten(data);
   renderJSON();
+  buildKeyOptions();
+  updateFileName();
 }
 
 /* FLATTEN */
@@ -221,7 +257,7 @@ function flatten(obj, prefix=''){
   return res;
 }
 
-/* RENDER JSON */
+/* JSON */
 function renderJSON(highlightKey=""){
   const jsonEl = document.getElementById("json");
   const jsonString = JSON.stringify(data, null, 2);
@@ -233,12 +269,10 @@ function renderJSON(highlightKey=""){
 
   const keyName = highlightKey.split(".").pop();
 
-  const highlighted = jsonString.replace(
+  jsonEl.innerHTML = jsonString.replace(
     new RegExp(`"${keyName}"\\s*:\\s*"([^"]+)"`),
     `<span class="highlight">"${keyName}": "$1"</span>`
   );
-
-  jsonEl.innerHTML = highlighted;
 }
 
 /* SEARCH */
@@ -252,46 +286,124 @@ search.oninput = () => {
     return;
   }
 
-  const results = Object.entries(flat).filter(([k]) =>
-    k.toLowerCase().includes(q)
-  );
-
-  if(results.length === 0){
-    resultBox.innerHTML = "No result";
-    return;
-  }
-
   resultBox.innerHTML = "";
 
-  results.forEach(([k,v]) => {
-    const item = document.createElement("div");
-    item.className = "result-item";
+  Object.entries(flat)
+    .filter(([k]) => k.toLowerCase().includes(q))
+    .forEach(([k,v]) => {
+      const item = document.createElement("div");
+      item.className = "result-item";
 
-    const keyEl = document.createElement("div");
-    keyEl.className = "key";
-    keyEl.textContent = k;
+      const keyEl = document.createElement("div");
+      keyEl.className = "key";
+      keyEl.textContent = k;
 
-    const valueEl = document.createElement("div");
-    valueEl.className = "value";
-    valueEl.textContent = v;
+      const valueEl = document.createElement("div");
+      valueEl.className = "value";
+      valueEl.textContent = v;
 
-    keyEl.onclick = () => copy(k);
-    valueEl.onclick = () => copy(v);
+      keyEl.onclick = () => copy(k);
+      valueEl.onclick = () => copy(v);
+      item.onclick = () => renderJSON(k);
 
-    item.onclick = () => renderJSON(k);
-
-    item.appendChild(keyEl);
-    item.appendChild(valueEl);
-    resultBox.appendChild(item);
-  });
+      item.appendChild(keyEl);
+      item.appendChild(valueEl);
+      resultBox.appendChild(item);
+    });
 };
+
+/* ASSET TOOL */
+function buildKeyOptions(){
+  const select = document.getElementById("assetKey");
+  select.innerHTML = "";
+
+  Object.keys(flat).forEach(k=>{
+    const opt = document.createElement("option");
+    opt.value = k;
+    opt.textContent = k;
+    select.appendChild(opt);
+  });
+}
+
+function updateFileName(){
+  if(!uploadedFile) return;
+
+  const key = document.getElementById("assetKey").value.split(".").pop();
+  const theme = themeKey.value.toLowerCase();
+  const country = countryEl.value;
+  const mode = modeEl.value;
+
+  const name = key === "thumbnail"
+    ? `${country==="kh"?"abc":"abl"}-${theme}.png`
+    : key === "backgroundImage"
+    ? `bg-${theme}-${country}-${mode}.png`
+    : key === "balanceBgImage"
+    ? `bgbl-${theme}-${country}-${mode}.png`
+    : key === "eventBalanceImageInside"
+    ? `evbl-${theme}-${country}-${mode}.png`
+    : key === "appearanceImage"
+    ? `appear-${theme}-${country}-${mode}.png`
+    : key === "qrScanImageButton"
+    ? `qr-${theme}-${country}-${mode}.png`
+    : `ic-${key}-${theme}-${country}-${mode}.png`;
+
+  document.getElementById("fileNamePreview").innerText = name;
+}
+
+/* DRAG + PREVIEW */
+const dropZone = document.getElementById("dropZone");
+const fileInput = document.getElementById("fileInput");
+const preview = document.getElementById("preview");
+
+dropZone.onclick = () => fileInput.click();
+
+function handleFile(file){
+  uploadedFile = file;
+
+  const reader = new FileReader();
+  reader.onload = e=>{
+    preview.src = e.target.result;
+    preview.style.display = "block";
+  };
+  reader.readAsDataURL(file);
+
+  updateFileName();
+}
+
+fileInput.onchange = e => handleFile(e.target.files[0]);
+
+dropZone.ondragover = e => {
+  e.preventDefault();
+  dropZone.style.borderColor = "#58a6ff";
+};
+
+dropZone.ondragleave = () => {
+  dropZone.style.borderColor = "#30363d";
+};
+
+dropZone.ondrop = e => {
+  e.preventDefault();
+  dropZone.style.borderColor = "#30363d";
+  handleFile(e.dataTransfer.files[0]);
+};
+
+document.getElementById("assetKey").onchange = updateFileName;
+
+function downloadFile(){
+  if(!uploadedFile) return alert("Upload file first");
+
+  const name = document.getElementById("fileNamePreview").innerText;
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(uploadedFile);
+  link.download = name;
+  link.click();
+}
 
 /* COPY */
 function copy(text){
   navigator.clipboard.writeText(text);
 }
 
-/* FULL JSON */
 function copyFullJSON(){
   navigator.clipboard.writeText(JSON.stringify(data,null,2));
 }
