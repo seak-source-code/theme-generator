@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Theme Developer Tool</title>
+<title>Theme Dev Tool</title>
 
 <style>
 body {
@@ -40,10 +40,17 @@ body {
 }
 
 /* INPUT */
+label {
+  font-size:12px;
+  color:#7d8590;
+  display:block;
+  margin-top:10px;
+}
+
 input, select {
   width:100%;
   padding:10px;
-  margin:6px 0;
+  margin-top:4px;
   background:#000;
   border:1px solid #21262d;
   color:#fff;
@@ -53,7 +60,7 @@ input, select {
 button {
   width:100%;
   padding:10px;
-  margin-top:6px;
+  margin-top:12px;
   border:none;
   border-radius:6px;
   cursor:pointer;
@@ -91,6 +98,9 @@ pre {
   color:#79c0ff;
   cursor:pointer;
 }
+
+.key:hover { color:#ffb86c; }
+.value:hover { color:#58a6ff; }
 </style>
 </head>
 
@@ -103,13 +113,16 @@ pre {
   <div class="header">Generate Theme</div>
   <div class="content">
 
+    <label>Theme Key</label>
     <input id="themeKey" value="kid-hamster"/>
 
+    <label>Country</label>
     <select id="country">
       <option value="kh">KH</option>
       <option value="la">LA</option>
     </select>
 
+    <label>Appearance Mode</label>
     <select id="mode">
       <option value="da">Dark</option>
       <option value="li">Light</option>
@@ -191,7 +204,6 @@ function generate(){
   };
 
   flat = flatten(data);
-
   renderJSON();
 }
 
@@ -209,10 +221,9 @@ function flatten(obj, prefix=''){
   return res;
 }
 
-/* RENDER JSON (TRUE FORMAT) */
+/* RENDER JSON */
 function renderJSON(highlightKey=""){
   const jsonEl = document.getElementById("json");
-
   const jsonString = JSON.stringify(data, null, 2);
 
   if(!highlightKey){
@@ -220,12 +231,11 @@ function renderJSON(highlightKey=""){
     return;
   }
 
-  // highlight matching line
+  const keyName = highlightKey.split(".").pop();
+
   const highlighted = jsonString.replace(
-    new RegExp(`"${highlightKey.split(".").pop()}"\\s*:\\s*"([^"]+)"`),
-    `<span class="highlight">"${
-      highlightKey.split(".").pop()
-    }": "$1"</span>`
+    new RegExp(`"${keyName}"\\s*:\\s*"([^"]+)"`),
+    `<span class="highlight">"${keyName}": "$1"</span>`
   );
 
   jsonEl.innerHTML = highlighted;
