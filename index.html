@@ -2,213 +2,94 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Theme Dev Tool</title>
+<title>Theme Developer Tool</title>
 
 <style>
-:root {
-  --bg: #000;
-  --panel: #0d1117;
-  --border: #21262d;
-  --card: #161b22;
-  --text: #e6edf3;
-  --muted: #7d8590;
-  --accent: #58a6ff;
-}
-
 body {
-  margin: 0;
-  font-family: -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  margin:0;
+  font-family:-apple-system;
+  background:#000;
+  color:#e6edf3;
 }
 
 .container {
-  display: flex;
-  height: 100vh;
+  display:flex;
+  height:100vh;
 }
 
-/* LEFT */
-.left {
-  width: 260px;
-  padding: 20px;
-  border-right: 1px solid var(--border);
-  background: var(--panel);
+.col {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  border-right:1px solid #21262d;
 }
 
+.col:last-child { border-right:none; }
+
+.header {
+  padding:12px;
+  font-weight:600;
+  border-bottom:1px solid #21262d;
+  background:#0d1117;
+}
+
+.content {
+  padding:12px;
+  overflow:auto;
+  flex:1;
+}
+
+/* INPUT */
 input, select {
-  width: 100%;
-  padding: 10px;
-  margin: 8px 0;
-  background: #000;
-  border: 1px solid var(--border);
-  color: var(--text);
-  border-radius: 6px;
-}
-
-.buttons {
-  display: flex;
-  gap: 8px;
+  width:100%;
+  padding:10px;
+  margin:6px 0;
+  background:#000;
+  border:1px solid #21262d;
+  color:#fff;
+  border-radius:6px;
 }
 
 button {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  background: var(--accent);
-  color: black;
-  font-weight: 600;
-}
-
-/* RIGHT */
-.right {
-  flex: 1;
-  display: flex;
-}
-
-.split {
-  display: flex;
-  width: 100%;
-}
-
-/* PREVIEW */
-.preview-wrapper {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #000;
-}
-
-.phone {
-  width: 320px;
-  height: 680px;
-  background: #000;
-  border-radius: 32px;
-  padding: 14px;
-  box-shadow: 0 0 0 6px #000, 0 15px 40px rgba(0,0,0,0.7);
-  position: relative;
-}
-
-.notch {
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100px;
-  height: 18px;
-  background: #111;
-  border-radius: 20px;
-}
-
-.preview {
-  width: 100%;
-  height: 100%;
-  overflow-y: auto;
-  padding-top: 25px;
-}
-
-/* ACCOUNT */
-.account-card {
-  background: var(--card);
-  border-radius: 14px;
-  padding: 15px;
-  display: flex;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-
-.circle {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: #30363d;
-}
-
-/* GRID */
-.row-2, .grid-3 {
-  display: grid;
-  gap: 10px;
-}
-
-.row-2 {
-  grid-template-columns: 1fr 1fr;
-}
-
-.grid-3 {
-  grid-template-columns: repeat(3, 1fr);
-  margin-top: 10px;
-}
-
-.item {
-  background: var(--card);
-  border-radius: 12px;
-  padding: 12px;
-  text-align: center;
-}
-
-.item img {
-  width: 26px;
-}
-
-.menu-name {
-  font-size: 11px;
-}
-
-.icon-name {
-  font-size: 8px;
-  color: var(--muted);
-  cursor: pointer;
-  word-break: break-all;
-}
-
-/* EXTRA */
-.extra-container {
-  margin-top: 10px;
-  background: var(--card);
-  padding: 10px;
-  border-radius: 12px;
-}
-
-.extra-row {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-}
-
-.extra-item {
-  min-width: 70px;
-  background: #21262d;
-  border-radius: 10px;
-  padding: 8px;
-  text-align: center;
+  width:100%;
+  padding:10px;
+  margin-top:6px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  background:#58a6ff;
 }
 
 /* JSON */
-.json-panel {
-  width: 420px;
-  border-left: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  background: #000;
+pre {
+  margin:0;
+  font-family:monospace;
+  color:#79c0ff;
+  line-height:1.5;
 }
 
-.json-header {
-  padding: 10px;
-  font-size: 12px;
-  border-bottom: 1px solid var(--border);
-  color: var(--muted);
+.highlight {
+  background:rgba(255,255,0,0.2);
 }
 
-.json-panel pre {
-  flex: 1;
-  margin: 0;
-  padding: 15px;
-  font-family: monospace;
-  color: #79c0ff;
-  overflow: auto;
+/* SEARCH */
+.result-item {
+  padding:8px;
+  border-bottom:1px solid #21262d;
+}
+
+.result-item:hover {
+  background:#111;
+}
+
+.key {
+  color:#ffa657;
+  cursor:pointer;
+}
+
+.value {
+  color:#79c0ff;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -218,164 +99,203 @@ button {
 <div class="container">
 
 <!-- LEFT -->
-<div class="left">
-  <h3>Theme Config</h3>
+<div class="col">
+  <div class="header">Generate Theme</div>
+  <div class="content">
 
-  <input id="themeKey" value="KID-HAMSTER"/>
+    <input id="themeKey" value="kid-hamster"/>
 
-  <select id="country">
-    <option value="kh">KH</option>
-    <option value="la">LA</option>
-  </select>
+    <select id="country">
+      <option value="kh">KH</option>
+      <option value="la">LA</option>
+    </select>
 
-  <select id="mode">
-    <option value="da">Dark</option>
-    <option value="li">Light</option>
-  </select>
+    <select id="mode">
+      <option value="da">Dark</option>
+      <option value="li">Light</option>
+    </select>
 
-  <div class="buttons">
-    <button onclick="copyJSON()">Copy JSON</button>
-    <button onclick="download()">Download</button>
+    <button onclick="copyFullJSON()">Copy Full JSON</button>
+
+  </div>
+</div>
+
+<!-- MIDDLE -->
+<div class="col">
+  <div class="header">JSON Preview</div>
+  <div class="content">
+    <pre id="json"></pre>
   </div>
 </div>
 
 <!-- RIGHT -->
-<div class="right">
-<div class="split">
+<div class="col">
+  <div class="header">Search Key</div>
+  <div class="content">
 
-<!-- PREVIEW -->
-<div class="preview-wrapper">
-<div class="phone">
-<div class="notch"></div>
+    <input id="search" placeholder="search key..." />
+    <div id="result"></div>
 
-<div class="preview">
-
-<div class="account-card" id="accountCard"></div>
-
-<div class="row-2">
-<div class="item" id="payment"></div>
-<div class="item" id="topup"></div>
-</div>
-
-<div class="grid-3">
-<div class="item" id="card"></div>
-<div class="item" id="scanqr"></div>
-<div class="item" id="transfer"></div>
-</div>
-
-<div class="grid-3">
-<div class="item" id="deposit"></div>
-<div class="item" id="loan"></div>
-<div class="item" id="quickcash"></div>
-</div>
-
-<div class="extra-container">
-<div class="extra-row" id="extraRow"></div>
-</div>
-
-</div>
-</div>
-</div>
-
-<!-- JSON -->
-<div class="json-panel">
-<div class="json-header">preview.json</div>
-<pre id="json"></pre>
-</div>
-
-</div>
+  </div>
 </div>
 
 </div>
 
 <script>
-function renderItem(el, label, file){
-  el.innerHTML = `
-    <img src="${file}" onerror="this.style.display='none'">
-    <div class="menu-name">${label}</div>
-    <div class="icon-name" onclick="copyText('${file}', this)">
-      ${file}
-    </div>
-  `;
-}
+let data = {};
+let flat = {};
 
+/* GENERATE */
 function generate(){
-  const theme = document.getElementById("themeKey").value.toLowerCase();
-  const country = document.getElementById("country").value;
-  const mode = document.getElementById("mode").value;
+  const theme = themeKey.value.toLowerCase();
+  const country = countryEl.value;
+  const mode = modeEl.value;
 
-  const prefix = country==="kh"?"abc":"abl";
+  const prefix = country === "kh" ? "abc" : "abl";
   const icon = (n)=>`ic-${n}-${theme}-${country}-${mode}.png`;
 
-  const data = {
+  data = {
     themeKey: theme,
     thumbnail: `${prefix}-${theme}.png`,
     backgroundImage: `bg-${theme}-${country}-${mode}.png`,
     balanceBgImage: `bgbl-${theme}-${country}-${mode}.png`,
-    eventBalaneImageInside: `evbl-${theme}-${country}-${mode}.png`,
+    eventBalanceImageInside: `evbl-${theme}-${country}-${mode}.png`,
     appearanceImage: `appear-${theme}-${country}-${mode}.png`,
     qrScanImageButton: `qr-${theme}-${country}-${mode}.png`,
-    mainMenu:{},
-    extraMenu:{}
+    mainMenu: {
+      account: icon("acc"),
+      payment: icon("payment"),
+      topup: icon("topup"),
+      card: icon("card"),
+      scanqr: icon("scanqr"),
+      transfer: icon("transfer"),
+      deposit: icon("deposit"),
+      loan: icon("loan"),
+      faqs: icon("faqs"),
+      quickcash: icon("quickcash")
+    },
+    extraMenu: {
+      exgrate: icon("exgrate"),
+      publicservice: icon("publicservice"),
+      csx: icon("csx"),
+      promotion: icon("promotion"),
+      location: icon("location"),
+      invitefri: icon("invitefri"),
+      security: icon("security"),
+      payme: icon("payme"),
+      acsmry: icon("acsmry"),
+      trade: icon("trade"),
+      acpay: icon("acpay"),
+      merchant: icon("merchant")
+    }
   };
 
-  const acc = icon("acc");
-  document.getElementById("accountCard").innerHTML =
-    `<div class="circle"></div>
-     <div>
-       <h3>Accounts</h3>
-       <div class="icon-name" onclick="copyText('${acc}', this)">
-         ${acc}
-       </div>
-     </div>`;
+  flat = flatten(data);
 
-  const main = ["payment","topup","card","scanqr","transfer","deposit","loan","quickcash"];
-  main.forEach(k=>{
-    const f = icon(k);
-    data.mainMenu[k]=f;
-    renderItem(document.getElementById(k), k, f);
-  });
-
-  const extra = ["exgrate","publicservice","csx","promotion","location","invitefri","security","payme","acsmry","trade","acpay","merchant"];
-  const row = document.getElementById("extraRow");
-  row.innerHTML="";
-
-  extra.forEach(k=>{
-    const f = icon(k);
-    data.extraMenu[k]=f;
-    const div = document.createElement("div");
-    div.className="extra-item";
-    renderItem(div, k, f);
-    row.appendChild(div);
-  });
-
-  document.getElementById("json").textContent =
-    JSON.stringify(data,null,2);
+  renderJSON();
 }
 
-function copyText(t,el){
-  navigator.clipboard.writeText(t);
-  el.innerText="✓";
-  setTimeout(()=>el.innerText=t,800);
+/* FLATTEN */
+function flatten(obj, prefix=''){
+  let res = {};
+  for(let k in obj){
+    const key = prefix ? `${prefix}.${k}` : k;
+    if(typeof obj[k] === 'object'){
+      Object.assign(res, flatten(obj[k], key));
+    } else {
+      res[key] = obj[k];
+    }
+  }
+  return res;
 }
+
+/* RENDER JSON (TRUE FORMAT) */
+function renderJSON(highlightKey=""){
+  const jsonEl = document.getElementById("json");
+
+  const jsonString = JSON.stringify(data, null, 2);
+
+  if(!highlightKey){
+    jsonEl.textContent = jsonString;
+    return;
+  }
+
+  // highlight matching line
+  const highlighted = jsonString.replace(
+    new RegExp(`"${highlightKey.split(".").pop()}"\\s*:\\s*"([^"]+)"`),
+    `<span class="highlight">"${
+      highlightKey.split(".").pop()
+    }": "$1"</span>`
+  );
+
+  jsonEl.innerHTML = highlighted;
+}
+
+/* SEARCH */
+search.oninput = () => {
+  const q = search.value.toLowerCase();
+  const resultBox = document.getElementById("result");
+
+  if(!q){
+    resultBox.innerHTML = "";
+    renderJSON();
+    return;
+  }
+
+  const results = Object.entries(flat).filter(([k]) =>
+    k.toLowerCase().includes(q)
+  );
+
+  if(results.length === 0){
+    resultBox.innerHTML = "No result";
+    return;
+  }
+
+  resultBox.innerHTML = "";
+
+  results.forEach(([k,v]) => {
+    const item = document.createElement("div");
+    item.className = "result-item";
+
+    const keyEl = document.createElement("div");
+    keyEl.className = "key";
+    keyEl.textContent = k;
+
+    const valueEl = document.createElement("div");
+    valueEl.className = "value";
+    valueEl.textContent = v;
+
+    keyEl.onclick = () => copy(k);
+    valueEl.onclick = () => copy(v);
+
+    item.onclick = () => renderJSON(k);
+
+    item.appendChild(keyEl);
+    item.appendChild(valueEl);
+    resultBox.appendChild(item);
+  });
+};
+
+/* COPY */
+function copy(text){
+  navigator.clipboard.writeText(text);
+}
+
+/* FULL JSON */
+function copyFullJSON(){
+  navigator.clipboard.writeText(JSON.stringify(data,null,2));
+}
+
+/* INIT */
+const themeKey = document.getElementById("themeKey");
+const countryEl = document.getElementById("country");
+const modeEl = document.getElementById("mode");
 
 ["themeKey","country","mode"].forEach(id=>{
-  document.getElementById(id).addEventListener("input",generate);
+  document.getElementById(id).oninput = generate;
 });
 
 generate();
-
-function copyJSON(){
-  navigator.clipboard.writeText(document.getElementById("json").innerText);
-}
-
-function download(){
-  const blob=new Blob([document.getElementById("json").innerText]);
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="theme.json";
-  a.click();
-}
 </script>
 
 </body>
