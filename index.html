@@ -37,27 +37,38 @@ body {
   padding:12px;
   overflow:auto;
   flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+/* FORM */
+.form-group {
+  width:100%;
+  max-width:320px;
+  margin-bottom:10px;
 }
 
 label {
   font-size:12px;
   color:#7d8590;
+  margin-bottom:4px;
   display:block;
-  margin-top:10px;
 }
 
 input, select {
   width:100%;
   padding:10px;
-  margin-top:4px;
   background:#000;
   border:1px solid #21262d;
   color:#fff;
   border-radius:6px;
+  box-sizing:border-box;
 }
 
 button {
   width:100%;
+  max-width:320px;
   padding:10px;
   margin-top:12px;
   border:none;
@@ -71,42 +82,62 @@ pre {
   margin:0;
   font-family:monospace;
   color:#79c0ff;
-  line-height:1.5;
-}
-
-.highlight {
-  background:rgba(255,255,0,0.2);
 }
 
 /* SEARCH */
 .result-item {
+  width:100%;
+  max-width:320px;
   padding:8px;
   border-bottom:1px solid #21262d;
 }
 
-.result-item:hover {
-  background:#111;
+.key { color:#ffa657; cursor:pointer; }
+.value { color:#79c0ff; cursor:pointer; }
+
+/* DROPDOWN */
+.dropdown {
+  width:100%;
+  max-width:320px;
+  border:1px solid #21262d;
+  max-height:150px;
+  overflow:auto;
+  background:#0d1117;
 }
 
-.key {
-  color:#ffa657;
+.dropdown-item {
+  padding:8px;
   cursor:pointer;
+  font-size:12px;
 }
 
-.value {
-  color:#79c0ff;
-  cursor:pointer;
+.dropdown-item:hover {
+  background:#161b22;
 }
 
 /* DROP ZONE */
 #dropZone {
+  width:100%;
+  max-width:320px;
   border:2px dashed #30363d;
-  border-radius:10px;
   padding:20px;
   text-align:center;
-  color:#7d8590;
-  margin-top:6px;
+  border-radius:8px;
   cursor:pointer;
+}
+
+/* PREVIEW */
+#preview {
+  max-width:320px;
+  margin-top:10px;
+  display:none;
+}
+
+/* OUTPUT */
+#fileNamePreview {
+  max-width:320px;
+  word-break:break-all;
+  color:#79c0ff;
 }
 </style>
 </head>
@@ -120,20 +151,26 @@ pre {
   <div class="header">Theme Generator</div>
   <div class="content">
 
-    <label>Theme Key</label>
-    <input id="themeKey" value="kid-hamster"/>
+    <div class="form-group">
+      <label>Theme Key</label>
+      <input id="themeKey" value="kid-hamster"/>
+    </div>
 
-    <label>Country</label>
-    <select id="country">
-      <option value="kh">KH</option>
-      <option value="la">LA</option>
-    </select>
+    <div class="form-group">
+      <label>Country</label>
+      <select id="country">
+        <option value="kh">KH</option>
+        <option value="la">LA</option>
+      </select>
+    </div>
 
-    <label>Appearance Mode</label>
-    <select id="mode">
-      <option value="da">Dark</option>
-      <option value="li">Light</option>
-    </select>
+    <div class="form-group">
+      <label>Appearance Mode</label>
+      <select id="mode">
+        <option value="da">Dark</option>
+        <option value="li">Light</option>
+      </select>
+    </div>
 
     <button onclick="copyFullJSON()">Copy Full JSON</button>
 
@@ -150,39 +187,40 @@ pre {
 
 <!-- SEARCH -->
 <div class="col">
-  <div class="header">Search Key</div>
+  <div class="header">Search</div>
   <div class="content">
-
-    <input id="search" placeholder="search key..." />
+    <div class="form-group">
+      <input id="search" placeholder="search key..." />
+    </div>
     <div id="result"></div>
-
   </div>
 </div>
 
 <!-- ASSET TOOL -->
 <div class="col">
-  <div class="header">Image Rename Tool</div>
+  <div class="header">Image Tool</div>
   <div class="content">
 
-    <label>Select Key</label>
-    <select id="assetKey"></select>
-
-    <label>Upload Image</label>
-
-    <div id="dropZone">
-      Drag & Drop Image Here<br/>or Click to Upload
+    <div class="form-group">
+      <label>Search Key</label>
+      <input id="assetKeyInput" placeholder="type key..." />
     </div>
 
-    <input type="file" id="fileInput" accept="image/*" style="display:none"/>
+    <div id="keySuggestions" class="dropdown"></div>
 
-    <img id="preview" style="max-width:100%; margin-top:10px; display:none; border-radius:6px;" />
-
-    <div style="margin-top:10px; font-size:12px; color:#7d8590;">
-      Output name:
+    <div class="form-group">
+      <label>Upload Image</label>
+      <div id="dropZone">Drag & Drop or Click</div>
     </div>
-    <div id="fileNamePreview" style="color:#79c0ff;"></div>
 
-    <button onclick="downloadFile()">Download Renamed</button>
+    <input type="file" id="fileInput" hidden />
+
+    <img id="preview"/>
+
+    <div style="font-size:12px;margin-top:10px;">Output name:</div>
+    <div id="fileNamePreview"></div>
+
+    <button onclick="downloadFile()">Download</button>
 
   </div>
 </div>
@@ -190,233 +228,132 @@ pre {
 </div>
 
 <script>
-let data = {}, flat = {}, uploadedFile = null;
+let data={}, flat={}, uploadedFile=null, selectedKeyPath="";
 
 /* GENERATE */
 function generate(){
-  const theme = themeKey.value.toLowerCase();
-  const country = countryEl.value;
-  const mode = modeEl.value;
+  const t=themeKey.value.toLowerCase(),c=country.value,m=mode.value;
+  const prefix=c==="kh"?"abc":"abl";
+  const icon=n=>`ic-${n}-${t}-${c}-${m}.png`;
 
-  const prefix = country === "kh" ? "abc" : "abl";
-  const icon = (n)=>`ic-${n}-${theme}-${country}-${mode}.png`;
-
-  data = {
-    themeKey: theme,
-    thumbnail: `${prefix}-${theme}.png`,
-    backgroundImage: `bg-${theme}-${country}-${mode}.png`,
-    balanceBgImage: `bgbl-${theme}-${country}-${mode}.png`,
-    eventBalanceImageInside: `evbl-${theme}-${country}-${mode}.png`,
-    appearanceImage: `appear-${theme}-${country}-${mode}.png`,
-    qrScanImageButton: `qr-${theme}-${country}-${mode}.png`,
-    mainMenu: {
-      account: icon("acc"),
-      payment: icon("payment"),
-      topup: icon("topup"),
-      card: icon("card"),
-      scanqr: icon("scanqr"),
-      transfer: icon("transfer"),
-      deposit: icon("deposit"),
-      loan: icon("loan"),
-      faqs: icon("faqs"),
-      quickcash: icon("quickcash")
-    },
-    extraMenu: {
-      exgrate: icon("exgrate"),
-      publicservice: icon("publicservice"),
-      csx: icon("csx"),
-      promotion: icon("promotion"),
-      location: icon("location"),
-      invitefri: icon("invitefri"),
-      security: icon("security"),
-      payme: icon("payme"),
-      acsmry: icon("acsmry"),
-      trade: icon("trade"),
-      acpay: icon("acpay"),
-      merchant: icon("merchant")
-    }
+  data={
+    themeKey:t,
+    thumbnail:`${prefix}-${t}.png`,
+    backgroundImage:`bg-${t}-${c}-${m}.png`,
+    balanceBgImage:`bgbl-${t}-${c}-${m}.png`,
+    eventBalanceImageInside:`evbl-${t}-${c}-${m}.png`,
+    appearanceImage:`appear-${t}-${c}-${m}.png`,
+    qrScanImageButton:`qr-${t}-${c}-${m}.png`,
+    mainMenu:{account:icon("acc"),payment:icon("payment"),topup:icon("topup"),card:icon("card"),scanqr:icon("scanqr"),transfer:icon("transfer"),deposit:icon("deposit"),loan:icon("loan"),faqs:icon("faqs"),quickcash:icon("quickcash")},
+    extraMenu:{exgrate:icon("exgrate"),publicservice:icon("publicservice"),csx:icon("csx"),promotion:icon("promotion"),location:icon("location"),invitefri:icon("invitefri"),security:icon("security"),payme:icon("payme"),acsmry:icon("acsmry"),trade:icon("trade"),acpay:icon("acpay"),merchant:icon("merchant")}
   };
 
-  flat = flatten(data);
-  renderJSON();
-  buildKeyOptions();
-  updateFileName();
+  flat=flatten(data);
+  json.textContent=JSON.stringify(data,null,2);
 }
 
-/* FLATTEN */
-function flatten(obj, prefix=''){
-  let res = {};
-  for(let k in obj){
-    const key = prefix ? `${prefix}.${k}` : k;
-    if(typeof obj[k] === 'object'){
-      Object.assign(res, flatten(obj[k], key));
-    } else {
-      res[key] = obj[k];
-    }
+function flatten(o,p=''){
+  let r={};
+  for(let k in o){
+    let key=p?`${p}.${k}`:k;
+    typeof o[k]==='object'?Object.assign(r,flatten(o[k],key)):r[key]=o[k];
   }
-  return res;
-}
-
-/* JSON */
-function renderJSON(highlightKey=""){
-  const jsonEl = document.getElementById("json");
-  const jsonString = JSON.stringify(data, null, 2);
-
-  if(!highlightKey){
-    jsonEl.textContent = jsonString;
-    return;
-  }
-
-  const keyName = highlightKey.split(".").pop();
-
-  jsonEl.innerHTML = jsonString.replace(
-    new RegExp(`"${keyName}"\\s*:\\s*"([^"]+)"`),
-    `<span class="highlight">"${keyName}": "$1"</span>`
-  );
+  return r;
 }
 
 /* SEARCH */
-search.oninput = () => {
-  const q = search.value.toLowerCase();
-  const resultBox = document.getElementById("result");
-
-  if(!q){
-    resultBox.innerHTML = "";
-    renderJSON();
-    return;
-  }
-
-  resultBox.innerHTML = "";
-
+search.oninput=()=>{
+  result.innerHTML="";
   Object.entries(flat)
-    .filter(([k]) => k.toLowerCase().includes(q))
-    .forEach(([k,v]) => {
-      const item = document.createElement("div");
-      item.className = "result-item";
-
-      const keyEl = document.createElement("div");
-      keyEl.className = "key";
-      keyEl.textContent = k;
-
-      const valueEl = document.createElement("div");
-      valueEl.className = "value";
-      valueEl.textContent = v;
-
-      keyEl.onclick = () => copy(k);
-      valueEl.onclick = () => copy(v);
-      item.onclick = () => renderJSON(k);
-
-      item.appendChild(keyEl);
-      item.appendChild(valueEl);
-      resultBox.appendChild(item);
+    .filter(([k])=>k.includes(search.value))
+    .forEach(([k,v])=>{
+      const d=document.createElement("div");
+      d.className="result-item";
+      d.innerHTML=`<div class="key">${k}</div><div class="value">${v}</div>`;
+      d.onclick=()=>copy(v);
+      d.querySelector(".key").onclick=e=>{e.stopPropagation();copy(k)};
+      result.appendChild(d);
     });
 };
 
-/* ASSET TOOL */
-function buildKeyOptions(){
-  const select = document.getElementById("assetKey");
-  select.innerHTML = "";
+/* ASSET SEARCH */
+assetKeyInput.oninput=()=>{
+  keySuggestions.innerHTML="";
+  Object.keys(flat)
+    .filter(k=>k.includes(assetKeyInput.value))
+    .forEach(k=>{
+      const d=document.createElement("div");
+      d.className="dropdown-item";
+      d.innerText=k;
+      d.onclick=()=>{
+        selectedKeyPath=k;
+        assetKeyInput.value=k;
+        keySuggestions.innerHTML="";
+        updateFileName();
+      };
+      keySuggestions.appendChild(d);
+    });
+};
 
-  Object.keys(flat).forEach(k=>{
-    const opt = document.createElement("option");
-    opt.value = k;
-    opt.textContent = k;
-    select.appendChild(opt);
-  });
-}
+assetKeyInput.onkeydown=e=>{
+  if(e.key==="Enter"){
+    const k=Object.keys(flat).find(k=>k.includes(assetKeyInput.value));
+    if(k){selectedKeyPath=k;assetKeyInput.value=k;keySuggestions.innerHTML="";updateFileName();}
+  }
+};
 
-function updateFileName(){
-  if(!uploadedFile) return;
+/* FILE */
+dropZone.onclick=()=>fileInput.click();
 
-  const key = document.getElementById("assetKey").value.split(".").pop();
-  const theme = themeKey.value.toLowerCase();
-  const country = countryEl.value;
-  const mode = modeEl.value;
-
-  const name = key === "thumbnail"
-    ? `${country==="kh"?"abc":"abl"}-${theme}.png`
-    : key === "backgroundImage"
-    ? `bg-${theme}-${country}-${mode}.png`
-    : key === "balanceBgImage"
-    ? `bgbl-${theme}-${country}-${mode}.png`
-    : key === "eventBalanceImageInside"
-    ? `evbl-${theme}-${country}-${mode}.png`
-    : key === "appearanceImage"
-    ? `appear-${theme}-${country}-${mode}.png`
-    : key === "qrScanImageButton"
-    ? `qr-${theme}-${country}-${mode}.png`
-    : `ic-${key}-${theme}-${country}-${mode}.png`;
-
-  document.getElementById("fileNamePreview").innerText = name;
-}
-
-/* DRAG + PREVIEW */
-const dropZone = document.getElementById("dropZone");
-const fileInput = document.getElementById("fileInput");
-const preview = document.getElementById("preview");
-
-dropZone.onclick = () => fileInput.click();
-
-function handleFile(file){
-  uploadedFile = file;
-
-  const reader = new FileReader();
-  reader.onload = e=>{
-    preview.src = e.target.result;
-    preview.style.display = "block";
-  };
-  reader.readAsDataURL(file);
-
+function handleFile(f){
+  uploadedFile=f;
+  const r=new FileReader();
+  r.onload=e=>{preview.src=e.target.result;preview.style.display="block"};
+  r.readAsDataURL(f);
   updateFileName();
 }
 
-fileInput.onchange = e => handleFile(e.target.files[0]);
+fileInput.onchange=e=>handleFile(e.target.files[0]);
+dropZone.ondrop=e=>{e.preventDefault();handleFile(e.dataTransfer.files[0])};
+dropZone.ondragover=e=>e.preventDefault();
 
-dropZone.ondragover = e => {
-  e.preventDefault();
-  dropZone.style.borderColor = "#58a6ff";
-};
+/* FILENAME */
+function updateFileName(){
+  if(!uploadedFile||!selectedKeyPath)return;
+  const key=selectedKeyPath.split(".").pop();
+  const t=themeKey.value.toLowerCase(),c=country.value,m=mode.value;
 
-dropZone.ondragleave = () => {
-  dropZone.style.borderColor = "#30363d";
-};
+  const name=key==="thumbnail"
+    ?`${c==="kh"?"abc":"abl"}-${t}.png`
+    :key==="backgroundImage"
+    ?`bg-${t}-${c}-${m}.png`
+    :key==="balanceBgImage"
+    ?`bgbl-${t}-${c}-${m}.png`
+    :key==="eventBalanceImageInside"
+    ?`evbl-${t}-${c}-${m}.png`
+    :key==="appearanceImage"
+    ?`appear-${t}-${c}-${m}.png`
+    :key==="qrScanImageButton"
+    ?`qr-${t}-${c}-${m}.png`
+    :`ic-${key}-${t}-${c}-${m}.png`;
 
-dropZone.ondrop = e => {
-  e.preventDefault();
-  dropZone.style.borderColor = "#30363d";
-  handleFile(e.dataTransfer.files[0]);
-};
-
-document.getElementById("assetKey").onchange = updateFileName;
+  fileNamePreview.innerText=name;
+}
 
 function downloadFile(){
-  if(!uploadedFile) return alert("Upload file first");
-
-  const name = document.getElementById("fileNamePreview").innerText;
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(uploadedFile);
-  link.download = name;
-  link.click();
+  if(!uploadedFile)return alert("upload first");
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(uploadedFile);
+  a.download=fileNamePreview.innerText;
+  a.click();
 }
 
 /* COPY */
-function copy(text){
-  navigator.clipboard.writeText(text);
-}
-
-function copyFullJSON(){
-  navigator.clipboard.writeText(JSON.stringify(data,null,2));
-}
+function copy(t){navigator.clipboard.writeText(t)}
+function copyFullJSON(){copy(JSON.stringify(data,null,2))}
 
 /* INIT */
-const themeKey = document.getElementById("themeKey");
-const countryEl = document.getElementById("country");
-const modeEl = document.getElementById("mode");
-
-["themeKey","country","mode"].forEach(id=>{
-  document.getElementById(id).oninput = generate;
-});
-
+["themeKey","country","mode"].forEach(id=>document.getElementById(id).oninput=generate);
 generate();
 </script>
 
